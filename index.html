@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time Management Quiz</title>
+  <style>
+    :root{
+      --brand:#2d6cdf;
+      --brand-600:#1e50b5;
+      --bg:#f7f8fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --ok:#16a34a;
+      --warn:#d97706;
+      --bad:#dc2626;
+      --border:#e5e7eb;
+      --focus:#94c0ff;
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; background:var(--bg); color:var(--text); line-height:1.35;}
+    header{padding:20px clamp(16px, 4vw, 28px); background:linear-gradient(135deg, var(--brand), var(--brand-600)); color:#fff;}
+    header h1{margin:10px 0 6px; font-size:clamp(20px, 4.5vw, 28px)}
+    header p{margin:0; color:#e7eefc}
+    .hero{
+      display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+    }
+    .hero .imgWrap{
+      background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.35); border-radius:14px; padding:8px;
+    }
+    .hero svg{width:min(120px, 22vw); height:auto; display:block}
+
+    main{max-width:900px; margin:18px auto; padding:0 clamp(12px, 3.6vw, 24px);}    
+    .card{background:var(--card); border:1px solid var(--border); border-radius: var(--radius); box-shadow:0 2px 12px rgba(0,0,0,.05); padding: clamp(14px, 3.5vw, 22px);}    
+    .progress{display:flex; align-items:center; gap:10px; margin-bottom:14px; color:var(--muted); font-size:14px;}
+    .bar{flex:1; height:10px; background:#eef2ff; border-radius:999px; overflow:hidden;}
+    .bar > span{display:block; height:100%; width:0%; background:#7aa7ff; transition: width .25s ease;}
+    .q{padding:14px 0; border-top:1px dashed var(--border);} .q:first-of-type{border-top:none}
+    .q h3{margin:0 0 10px; font-size: clamp(16px, 4vw, 18px);}    
+    .options{display:grid; gap:8px; grid-template-columns: 1fr 1fr;}    
+    @media (max-width:560px){.options{grid-template-columns: 1fr}}
+    .opt{position:relative; border:1px solid var(--border); border-radius:12px; padding:12px 14px; background:#fff; cursor:pointer; display:flex; gap:10px; align-items:start; transition: border-color .15s, box-shadow .15s, background .15s;}
+    .opt:hover{border-color:#c7d2fe}
+    .opt input{position:absolute; inset:0; opacity:0; pointer-events:none;}
+    .opt .badge{min-width:28px; height:28px; border-radius:8px; background:#eef2ff; color:#1f3a8a; display:inline-flex; align-items:center; justify-content:center; font-weight:600; font-size:14px;}
+    .opt.selected{border-color:#b4c6ff; background:#f8fbff; box-shadow:0 1px 0 rgba(0,0,0,.03), 0 0 0 3px var(--focus);}    
+    .controls{display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-top:16px;}
+    button{appearance:none; border:none; border-radius:12px; padding:12px 16px; font-weight:600; cursor:pointer; background:var(--brand); color:white; transition: transform .05s ease, background .2s ease, opacity .2s ease;}
+    button:disabled{opacity:.5; cursor:not-allowed}
+    button:active{transform: translateY(1px)}
+    .secondary{background:#e5e7eb; color:#111827}
+    .linklike{background:transparent; color:var(--brand); padding:8px; border-radius:8px;}
+    .result{margin-top:18px; padding:14px; border-radius:12px; background:#f8fafc; border:1px solid var(--border); display:none;}
+    .result h2{margin:0 0 8px}
+    .tag{display:inline-block; font-size:12px; font-weight:700; padding:6px 10px; border-radius:999px; color:#fff;}
+    .tag.ok{background:var(--ok)} .tag.mid{background:var(--warn)} .tag.low{background:var(--bad)}
+    .small{color:var(--muted); font-size:13px}
+    footer{color:var(--muted); font-size:12px; text-align:center; padding:18px;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div class="imgWrap" aria-hidden="true">
+        <!-- Inline SVG image representing time management: a calendar, clock, and checkmarks -->
+        <svg viewBox="0 0 180 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Clock and calendar">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#c7d2fe"/>
+              <stop offset="1" stop-color="#93c5fd"/>
+            </linearGradient>
+          </defs>
+          <!-- Calendar -->
+          <rect x="8" y="10" rx="8" ry="8" width="90" height="70" fill="url(#g1)" stroke="#3753a4"/>
+          <rect x="8" y="22" width="90" height="10" fill="#3753a4"/>
+          <circle cx="22" cy="27" r="2" fill="#fff"/>
+          <circle cx="35" cy="27" r="2" fill="#fff"/>
+          <!-- Calendar grid -->
+          <g fill="#1f2937">
+            <rect x="16" y="38" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="30" y="38" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="44" y="38" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="58" y="38" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="72" y="38" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+
+            <rect x="16" y="52" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="30" y="52" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="44" y="52" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="58" y="52" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="72" y="52" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+
+            <rect x="16" y="66" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="30" y="66" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="44" y="66" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="58" y="66" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+            <rect x="72" y="66" width="10" height="10" fill="#fff" stroke="#aab6f6"/>
+          </g>
+          <!-- Checkmarks -->
+          <path d="M20 47 l3 3 l6 -7" stroke="#16a34a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M33 61 l3 3 l6 -7" stroke="#16a34a" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+          <!-- Clock -->
+          <circle cx="132" cy="55" r="30" fill="#fff" stroke="#3753a4" stroke-width="3"/>
+          <circle cx="132" cy="55" r="3" fill="#3753a4"/>
+          <line x1="132" y1="55" x2="132" y2="36" stroke="#3753a4" stroke-width="3" stroke-linecap="round"/>
+          <line x1="132" y1="55" x2="148" y2="55" stroke="#3753a4" stroke-width="3" stroke-linecap="round"/>
+          <text x="92" y="100" font-family="system-ui,Segoe UI,Arial" font-size="10" fill="#1f2937">Plan • Prioritize • Execute</text>
+        </svg>
+      </div>
+      <div>
+        <h1>Time Management Quiz</h1>
+        <p>Choose the option that best describes you. Option 1 is worth 1 point; option 4 is worth 4 points.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="quizCard" aria-labelledby="quizTitle">
+      <div class="progress" aria-live="polite">
+        <div class="bar" aria-hidden="true"><span id="barFill" style="width:0%"></span></div>
+        <div><span id="progressText">0</span>/15 answered</div>
+      </div>
+
+      <form id="quiz" novalidate>
+        <!-- Questions will be injected here -->
+      </form>
+
+      <div class="controls">
+        <button type="button" id="btnSubmit" disabled>Calculate Score</button>
+        <button type="button" class="secondary" id="btnClear">Clear Answers</button>
+        <button type="button" class="linklike" id="btnScrollTop">Back to top</button>
+      </div>
+
+      <div id="result" class="result" role="region" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div>Questions © Your organization. Interface by M365 Copilot.</div>
+  </footer>
+
+  <script>
+    const quizData = [
+      { q: "How often do you take work home?", opts: ["Every day","Three or more days per week","Twice a week","Once a week or less"] },
+      { q: "How many people constantly interrupt you in the course of a day?", opts: ["Six or more","Four to five","Two to three","One or less"] },
+      { q: "How much time do you spend each week in other activities outside your job (e.g., hobbies, exercising, social and cultural events, etc.)?", opts: ["Three hours or less","Four to five hours","Six to nine hours","Ten or more hours"] },
+      { q: "How much time do you spend each day “socializing” on the job (e.g., extended coffee breaks, late luncheons, long visits with coworkers, etc.)?", opts: ["Two hours or more","Sixty to ninety minutes","Fifteen to thirty minutes","Less than fifteen minutes"] },
+      { q: "How many separate stacks of work are usually on your desk during the day?", opts: ["Three stacks or more","Two stacks","One stack","My desk is clear"] },
+      { q: "How much of your work do you delegate?", opts: ["Very little","About twenty-five percent","Forty to fifty percent","More than fifty percent"] },
+      { q: "How often do you approach and discuss things with people on a one-on-one basis in the course of a day?", opts: ["None","At least once","Twice","More than two"] },
+      { q: "How much time do you spend training, learning or developing your skills during the course of a week?", opts: ["None","Less than an hour","One to two hours","Three hours or more"] },
+      { q: "How often do you procrastinate—put off making decisions in the course of a day?", opts: ["Fairly often","Occasionally","Seldom","I don’t"] },
+      { q: "How many times do you handle a piece of paper in the course of the day before doing something with it?", opts: ["Four times or more","Three times","Twice","Only once"] },
+      { q: "How often do you permit extensions of your own deadlines?", opts: ["Fairly often","Occasionally","Seldom","Only when there’s a good reason"] },
+      { q: "How do you approach detailed work?", opts: ["Do it all myself—I love it","I do most of it","Delegate some of it","Delegate most of it"] },
+      { q: "How often do you set, communicate, and review team or individual goals with your coworkers and family?", opts: ["Twice a year","Quarterly","Monthly","Weekly"] },
+      { q: "How often do you prepare a “to do” list and set priorities?", opts: ["Monthly","Bi-weekly","Weekly","Daily"] },
+      { q: "How much of your work do you do because you “really want” to do it?", opts: ["About five percent","Less than fifty percent","About seventy-five percent","Almost all of it"] }
+    ];
+
+    const formEl = document.getElementById('quiz');
+    const barFill = document.getElementById('barFill');
+    const progressText = document.getElementById('progressText');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const btnClear = document.getElementById('btnClear');
+    const btnScrollTop = document.getElementById('btnScrollTop');
+    const resultEl = document.getElementById('result');
+
+    function renderQuiz(){
+      const frag = document.createDocumentFragment();
+      quizData.forEach((item, idx) => {
+        const qId = `q${idx+1}`;
+        const qWrap = document.createElement('div');
+        qWrap.className = 'q';
+        qWrap.setAttribute('role', 'group');
+        qWrap.setAttribute('aria-labelledby', `${qId}-label`);
+
+        const title = document.createElement('h3');
+        title.id = `${qId}-label`;
+        title.textContent = `${idx+1}. ${item.q}`;
+        qWrap.appendChild(title);
+
+        const options = document.createElement('div');
+        options.className = 'options';
+
+        item.opts.forEach((label, optIndex) => {
+          const val = optIndex + 1; // 1..4
+          const id = `${qId}_opt${val}`;
+
+          const wrap = document.createElement('label');
+          wrap.className = 'opt';
+          wrap.setAttribute('for', id);
+
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = qId;
+          input.id = id;
+          input.value = String(val);
+          input.required = true;
+
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.textContent = val;
+
+          const text = document.createElement('div');
+          text.innerHTML = `<strong>Option ${val}:</strong> ${label}`;
+
+          wrap.appendChild(input);
+          wrap.appendChild(badge);
+          wrap.appendChild(text);
+          options.appendChild(wrap);
+        });
+
+        qWrap.appendChild(options);
+        frag.appendChild(qWrap);
+      });
+
+      formEl.appendChild(frag);
+    }
+
+    renderQuiz();
+
+    formEl.addEventListener('change', e => {
+      if (e.target && e.target.matches('input[type="radio"]')) {
+        const name = e.target.name;
+        document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+          inp.parentElement.classList.toggle('selected', inp.checked);
+        });
+        updateProgress();
+      }
+    });
+
+    function updateProgress(){
+      const total = quizData.length;
+      const answered = new Set(Array.from(formEl.querySelectorAll('input[type="radio"]:checked')).map(i => i.name)).size;
+      progressText.textContent = answered;
+      const pct = Math.round((answered/total)*100);
+      barFill.style.width = pct + '%';
+      btnSubmit.disabled = answered !== total;
+    }
+    updateProgress();
+
+    btnSubmit.addEventListener('click', () => {
+      if (!formEl.reportValidity()) return;
+      const values = Array.from(formEl.querySelectorAll('input[type="radio"]:checked')).map(inp => Number(inp.value));
+      const totalScore = values.reduce((a,b)=>a+b, 0); // 15..60
+
+      let band = {label: 'Developing', desc: 'There are opportunities to sharpen your time management habits.', cls:'low'};
+      if (totalScore >= 40 && totalScore <= 49) {
+        band = {label: 'On Track', desc: 'Good habits in place; continue to refine and prioritize.', cls:'mid'};
+      } else if (totalScore >= 50) {
+        band = {label: 'Strong', desc: 'You’re demonstrating strong time management practices.', cls:'ok'};
+      }
+
+      const breakdown = values.map((v,i)=>`Q${i+1}: ${v}`).join(' · ');
+
+      resultEl.innerHTML = `
+        <h2>Your Score: ${totalScore} / 60</h2>
+        <p><span class="tag ${band.cls}">${band.label}</span></p>
+        <p>${band.desc}</p>
+        <p class="small">${breakdown}</p>
+      `;
+      resultEl.style.display = 'block';
+      resultEl.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    btnClear.addEventListener('click', () => {
+      formEl.reset();
+      document.querySelectorAll('.opt.selected').forEach(el => el.classList.remove('selected'));
+      resultEl.style.display = 'none';
+      updateProgress();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+
+    btnScrollTop.addEventListener('click', () => { window.scrollTo({top:0, behavior:'smooth'}); });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.target.matches('button, [type="submit"], [type="radio"]')){
+        if (btnSubmit.disabled) e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
